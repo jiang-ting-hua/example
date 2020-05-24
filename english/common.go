@@ -37,3 +37,27 @@ func mkdir(dir string) (err error) {
 	}
 	return nil
 }
+
+//获取目录下的所有文件
+func GetAllfiles(dirPath string,files []string)([]string,error){
+	infos, err := ioutil.ReadDir(dirPath)
+	if err!=nil{
+		return files,errors.New("read file dir failed.")
+	}
+	fullDir:=dirPath
+	if runtime.GOOS == "windows" {
+		fullDir = fullDir+"\\"
+	}else{
+		fullDir = fullDir+"/"
+	}
+
+	for _,f:=range infos{
+		fullDir:=fullDir+f.Name()
+		if f.IsDir(){
+			files,_=GetAllfiles(fullDir,files)
+		}else{
+			files=append(files,fullDir)
+		}
+	}
+	return files,nil
+}
